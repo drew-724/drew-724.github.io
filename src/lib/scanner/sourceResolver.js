@@ -20,6 +20,8 @@ import * as hyperliquid      from './sources/hyperliquid';
 import * as bybit            from './sources/bybit';
 import * as gate             from './sources/gate';
 import * as kucoin           from './sources/kucoin';
+import * as okxCrypto        from './sources/okxCrypto';
+import * as kraken           from './sources/kraken';
 import * as okxTradfi        from './sources/okxTradfi';
 import * as lighter          from './sources/lighter';
 import * as binanceXStocks   from './sources/binanceXStocks';
@@ -36,15 +38,32 @@ function classifySymbol(symbol) {
 }
 
 // ─── Crypto sources (in priority order) ─────────────────────────────────────
-// CoinGecko is best for daily candles (no auth, generous limits)
-// Hyperliquid is best for intraday perps (no auth, fast)
-// Bybit/Gate/Kucoin are backups with their own perp/spot coverage
+// Strategy: exchanges first (no rate limits, no geo restrictions, high liquidity),
+// then CoinGecko last as a daily-candle fallback (it's heavily rate-limited but
+// has the widest altcoin coverage for obscure tokens).
+//
+// Tier 1: High-reliability exchanges — no auth, no rate limit issues, no geo blocks
+//   - OKX perps (highest liquidity, broadest altcoin coverage among perps)
+//   - Hyperliquid (native perp DEX, great for intraday, no rate limits)
+//   - Kraken spot (reliable, no geo issues, good for majors)
+//
+// Tier 2: Solid backups — may have minor rate limits but still generous
+//   - Bybit (high liquidity, broad coverage)
+//
+// Tier 3: More rate-limited or narrower coverage
+//   - Gate (good for long-tail altcoins)
+//   - Kucoin (good for long-tail altcoins)
+//
+// Tier 4: Last resort — rate-limited but widest altcoin coverage
+//   - CoinGecko (free tier ~30 req/min, frequently 429s; use only when exchanges don't list the token)
 const CRYPTO_SOURCES = [
-  { id: 'coingecko',   tier: 1, fetch: coingecko.fetchCandles,   bestFor: ['1D','1w'] },
+  { id: 'okx_perps',   tier: 1, fetch: okxCrypto.fetchCandles,   bestFor: ['all'] },
   { id: 'hyperliquid', tier: 1, fetch: hyperliquid.fetchCandles, bestFor: ['15m','30m','1H','4H','1w'] },
+  { id: 'kraken',      tier: 1, fetch: kraken.fetchCandles,      bestFor: ['1D','1w'] },
   { id: 'bybit',       tier: 2, fetch: bybit.fetchCandles,       bestFor: ['all'] },
   { id: 'gate',        tier: 3, fetch: gate.fetchCandles,        bestFor: ['all'] },
   { id: 'kucoin',      tier: 3, fetch: kucoin.fetchCandles,      bestFor: ['all'] },
+  { id: 'coingecko',   tier: 4, fetch: coingecko.fetchCandles,   bestFor: ['1D','1w'] },  // last resort
 ];
 
 // ─── Tradfi sources (in priority order) ─────────────────────────────────────
