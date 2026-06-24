@@ -15,8 +15,7 @@ async function loadSnapshot() {
   if (_snapshotCache) return _snapshotCache;
   try {
     // snapshot.json is committed to the repo root by the daily workflow
-    // Use Vite's BASE_URL so this works on both dev (/) and GitHub Pages (/trendscan.github.io/)
-    const res = await fetch(`${import.meta.env.BASE_URL}snapshot.json`);
+    const res = await fetch('/snapshot.json');
     if (!res.ok) return null;
     _snapshotCache = await res.json();
     return _snapshotCache;

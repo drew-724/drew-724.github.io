@@ -17,9 +17,17 @@ export default function NavBar() {
       minHeight: 52,
     }}>
       {/* Logo / brand */}
-      <div className="flex items-center gap-2 mr-4 md:mr-8 flex-shrink-0">
-        <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--scanner-accent)', boxShadow: '0 0 6px var(--scanner-accent)' }} />
-        <span className="text-[10px] font-bold tracking-[0.2em] uppercase hidden md:block" style={{ color: 'var(--scanner-text2)' }}>
+      <div className="flex items-center gap-2.5 mr-4 md:mr-8 flex-shrink-0">
+        <img
+          src="/logo-small.png"
+          alt="TrendScan"
+          className="w-7 h-7 md:w-8 md:h-8"
+          style={{ display: 'block' }}
+        />
+        <span className="text-[11px] md:text-[12px] font-bold tracking-[0.15em] uppercase" style={{ color: 'var(--scanner-text)' }}>
+          Trend<span style={{ color: 'var(--scanner-accent)' }}>Scan</span>
+        </span>
+        <span className="text-[9px] font-semibold tracking-[0.2em] uppercase hidden lg:block ml-2 pl-2" style={{ color: 'var(--scanner-text3)', borderLeft: '1px solid var(--scanner-border2)' }}>
           Crypto · Market Structure
         </span>
       </div>
