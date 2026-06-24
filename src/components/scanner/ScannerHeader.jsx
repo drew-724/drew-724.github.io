@@ -5,11 +5,23 @@ function indicatorLabel(type, emaVal, vwapVal) {
 }
 
 const EXCHANGE_NAMES = {
+  okx_perps: 'OKX Perps',
   okx: 'OKX Spot',
   kraken: 'Kraken',
   binance: 'Binance Spot',
   binance_perps: 'Binance Perps',
+  hyperliquid: 'Hyperliquid',
+  bybit: 'Bybit',
+  coingecko: 'CoinGecko',
 };
+
+function fmtVol(v) {
+  if (!v || v <= 0) return null;
+  if (v >= 1e9) return `$${(v / 1e9).toFixed(1)}B`;
+  if (v >= 1e6) return `$${(v / 1e6).toFixed(0)}M`;
+  if (v >= 1e3) return `$${(v / 1e3).toFixed(0)}K`;
+  return `$${v}`;
+}
 
 export default function ScannerHeader({ settings, scanMeta }) {
   const fastLabel = indicatorLabel(settings.fastType, settings.emaFast, settings.vwapFastDays);
@@ -47,7 +59,9 @@ export default function ScannerHeader({ settings, scanMeta }) {
           </p>
           <p className="mt-1 text-[10px] leading-relaxed max-w-lg" style={{ color: 'var(--scanner-text3)' }}>
             Returns assets satisfying: <span style={{ color: 'var(--scanner-text2)' }}>Price &gt; Base Trend</span> AND <span style={{ color: 'var(--scanner-text2)' }}>Fast MA &gt; Slow MA</span>.
-            Fully customizable by timeframe, calculation type, and moving average lengths.
+            Fully customizable by timeframe, calculation type, moving average lengths, and optional
+            <span style={{ color: 'var(--scanner-text2)' }}> 24H volume</span> and
+            <span style={{ color: 'var(--scanner-text2)' }}> market cap</span> filters to screen out illiquid or micro-cap assets.
           </p>
 
           {/* Live condition summary — each item on its own line */}
@@ -73,6 +87,20 @@ export default function ScannerHeader({ settings, scanMeta }) {
               <span>Universe</span>
               <CondBadge color="var(--scanner-text2)">Top 300</CondBadge>
             </div>
+            {settings.minVolume > 0 && (
+              <div className="flex items-center gap-1.5">
+                <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ background: 'var(--scanner-accent)' }} />
+                <span>Min Vol 24H</span>
+                <CondBadge color="var(--scanner-accent)">{fmtVol(settings.minVolume)}</CondBadge>
+              </div>
+            )}
+            {settings.minMarketCap > 0 && (
+              <div className="flex items-center gap-1.5">
+                <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ background: 'var(--scanner-accent)' }} />
+                <span>Min MCap</span>
+                <CondBadge color="var(--scanner-accent)">{fmtVol(settings.minMarketCap)}</CondBadge>
+              </div>
+            )}
           </div>
         </div>
 
