@@ -163,20 +163,20 @@ export default function ResultsTable({ results, settings, isScanning }) {
             <thead>
               <tr style={{ background: 'var(--scanner-bg2)', borderBottom: '1px solid var(--scanner-border2)' }}>
                 {[
-                  { key: 'rank', label: '#', right: true },
                   { key: null, label: 'Asset' },
                   { key: null, label: 'Price', right: true },
+                  { key: null, label: '7D', right: true },
                   { key: 'change24h', label: '24h Δ', right: true },
-                  { key: null, label: fastLabel, right: true },
-                  { key: null, label: midLabel, right: true },
-                  { key: null, label: slowLabel, right: true },
-                  { key: 'pricePct', label: 'Δ Base', right: true },
-                  { key: 'emaPct', label: 'Δ Spread', right: true },
                   { key: 'volume24h', label: 'VOL', right: true },
                   { key: 'rVol', label: 'rVOL', right: true },
                   { key: 'marketCap', label: 'MCAP', right: true },
                   { key: 'fundingRate', label: 'FUND', right: true },
                   { key: 'openInterest', label: 'OI', right: true },
+                  { key: 'pricePct', label: 'Δ Base', right: true },
+                  { key: 'emaPct', label: 'Δ Spread', right: true },
+                  { key: null, label: fastLabel, right: true },
+                  { key: null, label: midLabel, right: true },
+                  { key: null, label: slowLabel, right: true },
                 ].map((col, i) => (
                   <th
                     key={i}
@@ -227,9 +227,6 @@ function ResultRow({ row, index, maxPricePct, maxEmaPct }) {
       onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.025)'}
       onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
     >
-      {/* Rank */}
-      <td className="py-2 px-2.5 text-right text-[10px]" style={{ color: 'var(--scanner-text3)' }}>{row.rank}</td>
-
       {/* Asset */}
       <td className="py-2 px-2.5">
         <div className="text-[11px] font-bold leading-tight" style={{ color: 'var(--scanner-text)' }}>{row.symbol}</div>
@@ -241,35 +238,18 @@ function ResultRow({ row, index, maxPricePct, maxEmaPct }) {
         <span className="text-[11px] font-semibold tabular-nums" style={{ color: 'var(--scanner-text)' }}>{fmtPrice(row.price)}</span>
       </td>
 
-      {/* 7D Sparkline + 24h Change */}
+      {/* 7D Sparkline */}
       <td className="py-2 px-2.5 text-right">
-        <div className="flex items-center justify-end gap-2">
-          <MiniSparkline data={row.sparkline} positive={isPositive} />
-          <span className="text-[11px] font-semibold tabular-nums min-w-[52px] text-right" style={{
-            color: isPositive == null ? 'var(--scanner-text3)' : isPositive ? 'var(--scanner-green)' : 'var(--scanner-red)'
-          }}>
-            {fmtChange(row.change24h)}
-          </span>
-        </div>
+        <MiniSparkline data={row.sparkline} positive={isPositive} />
       </td>
 
-      {/* Fast EMA/VWAP */}
-      <td className="py-2 px-2.5 text-right text-[11px] tabular-nums" style={{ color: 'var(--scanner-text2)' }}>{fmtPrice(row.emaFast)}</td>
-
-      {/* Mid EMA/VWAP */}
-      <td className="py-2 px-2.5 text-right text-[11px] tabular-nums" style={{ color: 'var(--scanner-text2)' }}>{fmtPrice(row.emaMid)}</td>
-
-      {/* Base (slow) */}
-      <td className="py-2 px-2.5 text-right text-[11px] tabular-nums" style={{ color: 'var(--scanner-text2)' }}>{fmtPrice(row.emaSlow)}</td>
-
-      {/* Δ Base Trend */}
+      {/* 24h Change */}
       <td className="py-2 px-2.5 text-right">
-        <PctBarCell value={row.pricePct} barWidth={pBarW} color="var(--scanner-green)" />
-      </td>
-
-      {/* Δ Spread */}
-      <td className="py-2 px-2.5 text-right">
-        <PctBarCell value={row.emaPct} barWidth={eBarW} color="var(--scanner-blue)" />
+        <span className="text-[11px] font-semibold tabular-nums min-w-[52px] text-right" style={{
+          color: isPositive == null ? 'var(--scanner-text3)' : isPositive ? 'var(--scanner-green)' : 'var(--scanner-red)'
+        }}>
+          {fmtChange(row.change24h)}
+        </span>
       </td>
 
       {/* VOL 24H */}
@@ -315,6 +295,25 @@ function ResultRow({ row, index, maxPricePct, maxEmaPct }) {
           {fmtOI(row.openInterest)}
         </span>
       </td>
+
+      {/* Δ Base Trend */}
+      <td className="py-2 px-2.5 text-right">
+        <PctBarCell value={row.pricePct} barWidth={pBarW} color="var(--scanner-green)" />
+      </td>
+
+      {/* Δ Spread */}
+      <td className="py-2 px-2.5 text-right">
+        <PctBarCell value={row.emaPct} barWidth={eBarW} color="var(--scanner-blue)" />
+      </td>
+
+      {/* Fast EMA/VWAP */}
+      <td className="py-2 px-2.5 text-right text-[11px] tabular-nums" style={{ color: 'var(--scanner-text2)' }}>{fmtPrice(row.emaFast)}</td>
+
+      {/* Mid EMA/VWAP */}
+      <td className="py-2 px-2.5 text-right text-[11px] tabular-nums" style={{ color: 'var(--scanner-text2)' }}>{fmtPrice(row.emaMid)}</td>
+
+      {/* Base (slow) */}
+      <td className="py-2 px-2.5 text-right text-[11px] tabular-nums" style={{ color: 'var(--scanner-text2)' }}>{fmtPrice(row.emaSlow)}</td>
     </tr>
   );
 }
